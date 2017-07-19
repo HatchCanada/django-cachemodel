@@ -67,6 +67,3 @@ class CachedTableManager(models.Manager):
             raise self.model.DoesNotExist
         return table[value]
 
-    def all(self):
-        table = self._fetch_index(self._pk_field_name())
-        return table.values()
