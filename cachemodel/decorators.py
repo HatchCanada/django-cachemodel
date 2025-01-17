@@ -3,7 +3,10 @@ from functools import wraps
 
 from cachemodel import CACHE_FOREVER_TIMEOUT
 from cachemodel.utils import generate_cache_key
-import collections
+try:
+    from collections.abc import Callable
+except ImportError:
+    from collections import Callable  # For Python < 3.10
 
 def cached_method(auto_publish=False):
     """A decorator for CacheModel methods."""
@@ -21,7 +24,7 @@ def cached_method(auto_publish=False):
         wrapper._cached_method_target = target
         return wrapper
 
-    if isinstance(auto_publish, collections.Callable):
+    if isinstance(auto_publish, Callable):
         # we were used with no parens, fixup args 
         func = auto_publish
         auto_publish = False
@@ -47,7 +50,7 @@ def denormalized_field(field_name):
         wrapper._denormalized_field_name = field_name
         return wrapper
 
-    if isinstance(field_name, collections.Callable):
+    if isinstance(field_name, Callable):
         # we were used without an argument
         raise ArgumentErrror("You must pass a field name to @denormalized_field")
         
