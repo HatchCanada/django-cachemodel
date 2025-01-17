@@ -20,7 +20,10 @@ from cachemodel import CACHE_FOREVER_TIMEOUT
 from cachemodel.managers import CacheModelManager, CachedTableManager
 from cachemodel.decorators import find_fields_decorated_with
 from cachemodel.utils import generate_cache_key
-import collections
+try:
+    from collections.abc import Callable
+except ImportError:
+    from collections import Callable  # For Python < 3.10
 
 
 
@@ -85,7 +88,7 @@ class CacheModel(models.Model):
         if not getattr(method, '_cached_method', False):
             raise AttributeError("method '%s' is not a cached_method.");
         target = getattr(method, '_cached_method_target', None)
-        if isinstance(target, collections.Callable):
+        if isinstance(target, Callable):
             key = generate_cache_key([self.__class__.__name__, target.__name__, self.pk], *args, **kwargs)
             data = target(self, *args, **kwargs)
             cache.set(key, data, CACHE_FOREVER_TIMEOUT)
